@@ -8,6 +8,8 @@ A GitHub Action that builds Unity based projects.
 ## How to use
 
 ```yaml
+name: Unity Build
+
 on:
   push:
     branches:
@@ -39,11 +41,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: recursive
           clean: true
 
+      - name: validate editor installation
+        uses: xrtk/unity-validate@main
+
       - name: Unity Build (${{ matrix.build-target }})
-        uses: rageagainstthepixel/unity-build@main
+        uses: RageAgainstThePixel/unity-build@main
         with:
           build-target: ${{ matrix.build-target }}
 ```
