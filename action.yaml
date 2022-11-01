@@ -57,7 +57,7 @@ runs:
         args: '-quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ inputs.additional-build-args }}'
 
     - name: Zip Artifacts
-      if: ${{ success() && inputs.publish-artifacts == 'true' }}
+      if: always()
       run: |
         $artifacts = "${{ steps.unity-validate.outputs.project-path }}/Builds"
 
@@ -69,7 +69,7 @@ runs:
 
     - uses: actions/upload-artifact@v2
       name: Upload Artifacts
-      if: ${{ success() && inputs.publish-artifacts == 'true' }}
+      if: always()
       with:
         name: '${{ runner.os }}-${{ inputs.build-target }}-Artifacts'
         path: '${{ github.workspace }}/${{ runner.os }}-${{ inputs.build-target }}-Artifacts.zip'
