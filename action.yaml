@@ -1,0 +1,75 @@
+name: 'Unity Build Pipeline'
+description: 'Runs a Build using the specified build targets'
+branding:
+  icon: ''
+  color: 'blue'
+
+inputs:
+  build-target:
+    description: 'The build target to build for.'
+    # Unity -buildTarget command line args https://docs.unity3d.com/Manual/CommandLineArguments.html
+    # StandaloneWindows64, WSAPlayer, StandaloneOSX, iOS, StandaloneLinux64, Android, Lumin, WebGL
+    default: ''
+  additional-valiate-args:
+    description: 'Additional args to pass to validate command'
+    default: ''
+  additional-test-args:
+    description: 'Additional args to pass to test command'
+    default: ''
+  additional-build-args:
+    description: 'Additional args to pass to build command'
+    default: ''
+  publish-artifacts:
+    description: 'Should the workflow publish artifacts?'
+    default: 'true'
+
+runs:
+  using: "composite"
+  steps:
+    - id: unity-validate
+      name: Unity Editor Validation
+      uses: xrtk/unity-validate@main
+
+    - uses: xrtk/unity-action@main
+      name: Project Validation
+      with:
+        name: 'project-validation'
+        editor-path: '${{ steps.unity-validate.outputs.editor-path }}'
+        project-path: '${{ steps.unity-validate.outputs.project-path }}'
+        args: '-quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject ${{ inputs.additional-valiate-args }}'
+
+    - uses: xrtk/unity-action@main
+      name: '${{ inputs.build-target }}-Tests'
+      with:
+        name: '${{ inputs.build-target }}-Tests'
+        editor-path: '${{ steps.unity-validate.outputs.editor-path }}'
+        project-path: '${{ steps.unity-validate.outputs.project-path }}'
+        build-target: '${{ inputs.build-target }}'
+        args: '-batchmode -runEditorTests ${{ inputs.additional-test-args }}'
+
+    - uses: xrtk/unity-action@main
+      name: '${{ inputs.build-target }}-Build'
+      with:
+        name: '${{ inputs.build-target }}-Build'
+        editor-path: '${{ steps.unity-validate.outputs.editor-path }}'
+        project-path: '${{ steps.unity-validate.outputs.project-path }}'
+        build-target: '${{ inputs.build-target }}'
+        args: '-quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ inputs.additional-build-args }}'
+
+    - name: Zip Artifacts
+      if: ${{ success() && inputs.publish-artifacts == 'true' }}
+      run: |
+        $artifacts = "${{ steps.unity-validate.outputs.project-path }}/Builds"
+
+        if (Test-Path -Path $artifacts) {
+          Compress-Archive -Path "$artifacts/*" -DestinationPath ${{ github.workspace }}/${{ runner.os }}-${{ inputs.build-target }}-Artifacts.zip -Force
+          Remove-Item $artifacts -Force -Recurse
+        }
+      shell: pwsh
+
+    - uses: actions/upload-artifact@v2
+      name: Upload Artifacts
+      if: ${{ success() && inputs.publish-artifacts == 'true' }}
+      with:
+        name: '${{ runner.os }}-${{ inputs.build-target }}-Artifacts'
+        path: '${{ github.workspace }}/${{ runner.os }}-${{ inputs.build-target }}-Artifacts.zip'
