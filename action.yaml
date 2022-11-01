@@ -1,7 +1,7 @@
-name: 'Unity Build Pipeline'
-description: 'Runs a Build using the specified build targets'
+name: 'Unity Build Pipeline Utility'
+description: 'Runs a Unity build action using the specified arguments'
 branding:
-  icon: ''
+  icon: 'box'
   color: 'blue'
 
 inputs:
@@ -10,7 +10,7 @@ inputs:
     # Unity -buildTarget command line args https://docs.unity3d.com/Manual/CommandLineArguments.html
     # StandaloneWindows64, WSAPlayer, StandaloneOSX, iOS, StandaloneLinux64, Android, Lumin, WebGL
     default: ''
-  additional-valiate-args:
+  additional-validate-args:
     description: 'Additional args to pass to validate command'
     default: ''
   additional-test-args:
@@ -36,7 +36,7 @@ runs:
         name: 'project-validation'
         editor-path: '${{ steps.unity-validate.outputs.editor-path }}'
         project-path: '${{ steps.unity-validate.outputs.project-path }}'
-        args: '-quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject ${{ inputs.additional-valiate-args }}'
+        args: '-quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject ${{ inputs.additional-validate-args }}'
 
     - uses: xrtk/unity-action@main
       name: '${{ inputs.build-target }}-Tests'
