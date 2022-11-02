@@ -4,7 +4,9 @@ A GitHub Action that builds Unity based projects.
 
 > **Warning**
 >
-> This action requires that your Unity project be setup and using the [com.utilities.buildpipeine](https://github.com/RageAgainstThePixel/com.utilities.buildpipeine) package from OpenUPM.
+> This action requires that your Unity project be setup and using the [com.utilities.buildpipeine](https://github.com/RageAgainstThePixel/com.utilities.buildpipeine) package from OpenUPM
+
+[![openupm](https://img.shields.io/npm/v/com.utilities.buildpipeline?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.utilities.buildpipeline/)
 
 ## How to use
 
