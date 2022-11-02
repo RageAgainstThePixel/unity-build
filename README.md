@@ -39,15 +39,15 @@ jobs:
             build-target: StandaloneLinux64
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           clean: true
 
       - name: validate editor installation
-        uses: xrtk/unity-validate@main
+        uses: xrtk/unity-validate@v2
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@main
+        uses: RageAgainstThePixel/unity-build@v2
         with:
           build-target: ${{ matrix.build-target }}
 ```
