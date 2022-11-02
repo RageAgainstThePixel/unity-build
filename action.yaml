@@ -28,38 +28,39 @@ runs:
   steps:
     - id: unity-validate
       name: Unity Editor Validation
-      uses: xrtk/unity-validate@main
+      uses: xrtk/unity-validate@v2
 
-    - uses: xrtk/unity-action@main
+    - uses: xrtk/unity-action@v3
       name: Project Validation
       with:
         name: 'project-validation'
-        editor-path: '${{ steps.unity-validate.outputs.editor-path }}'
-        project-path: '${{ steps.unity-validate.outputs.project-path }}'
+        editor-path: '${{ env.editor-path }}'
+        project-path: '${{ env.project-path }}'
         args: '-quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject ${{ inputs.additional-validate-args }}'
 
-    - uses: xrtk/unity-action@main
+    - uses: xrtk/unity-action@v3
       name: '${{ inputs.build-target }}-Tests'
       with:
         name: '${{ inputs.build-target }}-Tests'
-        editor-path: '${{ steps.unity-validate.outputs.editor-path }}'
-        project-path: '${{ steps.unity-validate.outputs.project-path }}'
+        editor-path: '${{ env.editor-path }}'
+        project-path: '${{ env.project-path }}'
         build-target: '${{ inputs.build-target }}'
         args: '-batchmode -runEditorTests ${{ inputs.additional-test-args }}'
 
-    - uses: xrtk/unity-action@main
+    - uses: xrtk/unity-action@v3
       name: '${{ inputs.build-target }}-Build'
       with:
         name: '${{ inputs.build-target }}-Build'
-        editor-path: '${{ steps.unity-validate.outputs.editor-path }}'
-        project-path: '${{ steps.unity-validate.outputs.project-path }}'
+        editor-path: '${{ env.editor-path }}'
+        project-path: '${{ env.project-path }}'
         build-target: '${{ inputs.build-target }}'
         args: '-quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ inputs.additional-build-args }}'
 
     - name: Zip Artifacts
       if: always()
       run: |
-        $artifacts = "${{ steps.unity-validate.outputs.project-path }}/Builds"
+        # Zip Artifacts
+        $artifacts = "${{ env.project-path }}/Builds"
 
         if (Test-Path -Path $artifacts) {
           Compress-Archive -Path "$artifacts/*" -DestinationPath ${{ github.workspace }}/${{ runner.os }}-${{ inputs.build-target }}-Artifacts.zip -Force
@@ -67,7 +68,7 @@ runs:
         }
       shell: pwsh
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       name: Upload Artifacts
       if: always()
       with:
