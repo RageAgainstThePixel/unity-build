@@ -3,7 +3,8 @@
 A GitHub Action that builds Unity based projects.
 
 > **Warning**
-> This action requires that your Unity project be setup and using the com.utilities.buildpipeine package from OpenUPM.
+>
+> This action requires that your Unity project be setup and using the [com.utilities.buildpipeine](https://github.com/RageAgainstThePixel/com.utilities.buildpipeine) package from OpenUPM.
 
 ## How to use
 
