@@ -34,8 +34,6 @@ runs:
       name: Project Validation
       with:
         log-name: 'project-validation'
-        editor-path: '${{ env.UNITY_EDITOR_PATH }}'
-        project-path: '${{ env.UNITY_PROJECT_PATH }}'
         args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject'
 
     - uses: xrtk/unity-action@v4
@@ -43,8 +41,6 @@ runs:
       name: '${{ inputs.build-target }}-Tests'
       with:
         log-name: '${{ inputs.build-target }}-Tests'
-        editor-path: '${{ env.UNITY_EDITOR_PATH }}'
-        project-path: '${{ env.UNITY_PROJECT_PATH }}'
         build-target: '${{ inputs.build-target }}'
         args: '-nographics -batchmode -runEditorTests ${{ inputs.additional-test-args }}'
 
@@ -52,8 +48,6 @@ runs:
       name: '${{ inputs.build-target }}-Build'
       with:
         log-name: '${{ inputs.build-target }}-Build'
-        editor-path: '${{ env.UNITY_EDITOR_PATH }}'
-        project-path: '${{ env.UNITY_PROJECT_PATH }}'
         build-target: '${{ inputs.build-target }}'
         args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ inputs.additional-build-args }}'
 
