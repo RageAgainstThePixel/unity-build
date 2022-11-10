@@ -52,20 +52,20 @@ runs:
         args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ inputs.additional-build-args }}'
 
     - uses: josStorer/get-current-time@v2.0.2
-      if: always()
+      if: ${{ always() && inputs.publish-artifacts == 'true' }}
       id: current-time
       with:
         format: YYYY-MM-DDTHH-mm-ss-sss
 
     - uses: actions/upload-artifact@v3
       name: Upload Artifacts
-      if: always()
+      if: ${{ always() && inputs.publish-artifacts == 'true' }}
       with:
         name: '${{ runner.os }}-${{ inputs.build-target }}-Artifacts-${{ steps.current-time.outputs.formattedTime }}'
         path: '${{ env.UNITY_PROJECT_PATH }}/Builds'
 
     - name: Clean Artifacts
-      if: always()
+      if: ${{ always() && inputs.publish-artifacts == 'true' }}
       run: |
         # Clean Artifacts
         $artifacts = "${{ env.UNITY_PROJECT_PATH }}/Builds"
