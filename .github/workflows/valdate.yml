@@ -1,0 +1,75 @@
+name: unity-build-validation
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - '*'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            build-target: StandaloneLinux64
+          - os: windows-latest
+            build-target: StandaloneWindows64
+          - os: macos-latest
+            build-target: StandaloneOSX
+
+    steps:
+      - name: checkout self
+        uses: actions/checkout@v3
+
+      - name: checkout test project
+        uses: actions/checkout@v3
+        with:
+          repository: RageAgainstThePixel/com.utilities.buildpipeine
+          path: test-project
+
+        # Installs the Unity Editor based on your project version text file
+        # sets -> env.UNITY_EDITOR_PATH
+        # sets -> env.UNITY_PROJECT_PATH
+        # https://github.com/XRTK/unity-setup
+      - uses: xrtk/unity-setup@v4
+        with:
+          version-file-path: 'test-project/**/ProjectSettings/ProjectVersion.txt'
+
+        # Activates the installation with the provided credentials
+        # https://github.com/XRTK/activate-unity-license
+      - uses: xrtk/activate-unity-license@v1
+        with:
+          # Required
+          username: ${{ secrets.UNITY_USERNAME }}
+          password: ${{ secrets.UNITY_PASSWORD }}
+          # Optional
+          license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
+          serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
+
+      - name: Unity Build (${{ matrix.build-target }})
+        uses: ./ #RageAgainstThePixel/unity-build
+        with:
+          build-target: ${{ matrix.build-target }}
+
+      - name: Unity Build No Tests (${{ matrix.build-target }})
+        uses: ./ #RageAgainstThePixel/unity-build
+        with:
+          build-target: ${{ matrix.build-target }}
+          test: false
+
+      - name: Unity Build No Artifacts (${{ matrix.build-target }})
+        uses: ./ #RageAgainstThePixel/unity-build
+        with:
+          build-target: ${{ matrix.build-target }}
+          publish-artifacts: false

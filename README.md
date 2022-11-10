@@ -46,11 +46,14 @@ jobs:
         with:
           clean: true
 
-      - name: validate editor installation
-        uses: xrtk/unity-validate@v2
+        # Installs the Unity Editor based on your project version text file
+        # sets -> env.UNITY_EDITOR_PATH
+        # sets -> env.UNITY_PROJECT_PATH
+        # https://github.com/XRTK/unity-setup
+      - uses: xrtk/unity-setup@v4
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v2
+        uses: RageAgainstThePixel/unity-build@v3
         with:
           build-target: ${{ matrix.build-target }}
 ```
