@@ -61,7 +61,7 @@ runs:
       name: Upload Artifacts
       if: always()
       with:
-        name: '${{ runner.os }}-${{ inputs.build-target }}-Artifacts-${{ steps.current-time.outputs.time }}'
+        name: '${{ runner.os }}-${{ inputs.build-target }}-Artifacts-${{ steps.current-time.outputs.formattedTime }}'
         path: '${{ env.UNITY_PROJECT_PATH }}/Builds'
 
     - name: Clean Artifacts
