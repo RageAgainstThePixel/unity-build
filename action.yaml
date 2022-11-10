@@ -55,7 +55,7 @@ runs:
       if: always()
       id: current-time
       with:
-        format: YYYY-MM-DDTHH.mm.ss.sssZ
+        format: YYYY-MM-DDTHH.mm.ss.sss
 
     - uses: actions/upload-artifact@v3
       name: Upload Artifacts
