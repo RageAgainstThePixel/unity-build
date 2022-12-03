@@ -53,7 +53,7 @@ jobs:
       - uses: xrtk/unity-setup@v6
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v3
+        uses: RageAgainstThePixel/unity-build@v4
         with:
           build-target: ${{ matrix.build-target }}
 ```
