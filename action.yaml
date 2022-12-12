@@ -30,13 +30,13 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: xrtk/unity-action@test
+    - uses: xrtk/unity-action@v5
       name: Project Validation
       with:
         log-name: 'project-validation'
         args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject'
 
-    - uses: xrtk/unity-action@test
+    - uses: xrtk/unity-action@v5
       if: ${{ inputs.test == 'true' }}
       name: '${{ inputs.build-target }}-Tests'
       with:
@@ -44,7 +44,7 @@ runs:
         build-target: '${{ inputs.build-target }}'
         args: '-nographics -batchmode -runEditorTests ${{ inputs.additional-test-args }}'
 
-    - uses: xrtk/unity-action@test
+    - uses: xrtk/unity-action@v5
       name: '${{ inputs.build-target }}-Build'
       with:
         log-name: '${{ inputs.build-target }}-Build'

@@ -43,8 +43,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          clean: true
 
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
