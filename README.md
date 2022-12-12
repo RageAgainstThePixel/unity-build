@@ -51,9 +51,11 @@ jobs:
         # sets -> env.UNITY_PROJECT_PATH
         # https://github.com/XRTK/unity-setup
       - uses: xrtk/unity-setup@v6
+        with:
+          modules: ${{ matrix.build-target }}
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v4
+        uses: RageAgainstThePixel/unity-build@v5
         with:
           build-target: ${{ matrix.build-target }}
 ```

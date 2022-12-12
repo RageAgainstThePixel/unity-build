@@ -44,6 +44,7 @@ jobs:
         # https://github.com/XRTK/unity-setup
       - uses: xrtk/unity-setup@v6
         with:
+          modules: ${{ matrix.build-target }}
           version-file-path: 'test-project/**/ProjectSettings/ProjectVersion.txt'
 
         # Activates the installation with the provided credentials
