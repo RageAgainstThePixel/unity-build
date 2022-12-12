@@ -52,7 +52,7 @@ jobs:
         # https://github.com/XRTK/unity-setup
       - uses: xrtk/unity-setup@v6
         with:
-          modules: ${{ matrix.build-target }}
+          build-targets: ${{ matrix.build-target }}
 
       - name: Unity Build (${{ matrix.build-target }})
         uses: RageAgainstThePixel/unity-build@v5
