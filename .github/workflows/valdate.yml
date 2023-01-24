@@ -25,7 +25,7 @@ jobs:
             build-target: StandaloneLinux64
           - os: windows-latest
             build-target: StandaloneWindows64
-          - os: macos-latest
+          - os: macos-12
             build-target: StandaloneOSX
 
     steps:
