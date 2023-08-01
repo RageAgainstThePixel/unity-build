@@ -48,12 +48,12 @@ jobs:
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
         # https://github.com/XRTK/unity-setup
-      - uses: xrtk/unity-setup@v7.1
+      - uses: xrtk/unity-setup@v7.2
         with:
           build-targets: ${{ matrix.build-target }}
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v5
+        uses: RageAgainstThePixel/unity-build@v6
         with:
           build-target: ${{ matrix.build-target }}
 ```

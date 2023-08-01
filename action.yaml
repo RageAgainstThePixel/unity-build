@@ -30,13 +30,13 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: xrtk/unity-action@v5
+    - uses: xrtk/unity-action@v6
       name: Project Validation
       with:
         log-name: 'project-validation'
         args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject'
 
-    - uses: xrtk/unity-action@v5
+    - uses: xrtk/unity-action@v6
       if: ${{ inputs.test == 'true' }}
       name: '${{ inputs.build-target }}-Tests'
       with:
@@ -44,7 +44,7 @@ runs:
         build-target: '${{ inputs.build-target }}'
         args: '-nographics -batchmode -runEditorTests ${{ inputs.additional-test-args }}'
 
-    - uses: xrtk/unity-action@v5
+    - uses: xrtk/unity-action@v6
       name: '${{ inputs.build-target }}-Build'
       with:
         log-name: '${{ inputs.build-target }}-Build'
@@ -65,12 +65,20 @@ runs:
         path: '${{ env.UNITY_PROJECT_PATH }}/Builds'
 
     - name: Clean Artifacts
-      if: ${{ always() && inputs.publish-artifacts == 'true' }}
+      if: ${{ always() }}
       run: |
         # Clean Artifacts
         $artifacts = "${{ env.UNITY_PROJECT_PATH }}/Builds"
 
+        Write-Host "Cleaning build artifacts path: $artifacts"
+
         if (Test-Path -Path $artifacts) {
-          Remove-Item $artifacts -Force -Recurse
+          try {
+            Remove-Item $artifacts -Recurse -Force
+          } catch {
+            Write-Warning "Failed to delete artifacts folder: $_"
+          }
+        } else {
+          Write-Warning "Artifacts folder not found."
         }
       shell: pwsh
