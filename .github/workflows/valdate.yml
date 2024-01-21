@@ -56,8 +56,9 @@ jobs:
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
           # Optional
-          serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
           license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
+          auth-key: ${{ secrets.UNITY_2FA_KEY }} # Required for personal activations
+          # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
 
       - name: Unity Build (${{ matrix.build-target }})
         uses: ./ #RageAgainstThePixel/unity-build
