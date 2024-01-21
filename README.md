@@ -42,7 +42,7 @@ jobs:
             build-target: StandaloneLinux64
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
@@ -53,7 +53,7 @@ jobs:
           build-targets: ${{ matrix.build-target }}
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v6
+        uses: RageAgainstThePixel/unity-build@v7
         with:
           build-target: ${{ matrix.build-target }}
 ```
