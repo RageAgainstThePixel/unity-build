@@ -51,25 +51,43 @@ runs:
         build-target: '${{ inputs.build-target }}'
         args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ inputs.additional-build-args }}'
 
+    - name: Ensure Unity process is dead
+      if: always()
+      run: |
+        $processIdFile = Join-Path $env:GITHUB_WORKSPACE "unity-process-id.txt"
+
+        if (Test-Path $processIdFile) {
+          $processId = Get-Content $processIdFile
+          Write-Host "::debug::Unity Process ID found: $processId"
+          $unityProcess = Get-Process -Id $processId -ErrorAction SilentlyContinue
+          if ($unityProcess -and !$unityProcess.HasExited) {
+            Write-Host "::debug::Killing Unity process with PID $processId"
+            Stop-Process -Id $processId -Force
+          }
+        }
+      shell: pwsh
+
     - uses: josStorer/get-current-time@v2.0.2
       if: ${{ always() && inputs.publish-artifacts == 'true' }}
       id: current-time
       with:
-        format: YYYY-MM-DDTHH-mm-ss-sss
+        format: YYYY-MM-DDTHH-mm-ss
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       name: Upload Artifacts
       if: ${{ always() && inputs.publish-artifacts == 'true' }}
       with:
-        name: '${{ runner.os }}-${{ inputs.build-target }}-Artifacts-${{ steps.current-time.outputs.formattedTime }}'
-        path: '${{ env.UNITY_PROJECT_PATH }}/Builds'
+        name: '${{ runner.os }}-${{ inputs.build-target }}-Artifacts-${{ github.run_number }}.${{ github.run_attempt }}-${{ steps.current-time.outputs.formattedTime }}'
+        path: |
+          ${{ env.UNITY_PROJECT_PATH }}/**/*.log
+          ${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/
+          !${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/*_BackUpThisFolder_ButDontShipItWithYourGame/**
+          !${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/*_BurstDebugInformation_DoNotShip/**
 
     - name: Clean Artifacts
       if: ${{ always() }}
       run: |
-        # Clean Artifacts
         $artifacts = "${{ env.UNITY_PROJECT_PATH }}/Builds"
-
         Write-Host "Cleaning build artifacts path: $artifacts"
 
         if (Test-Path -Path $artifacts) {
