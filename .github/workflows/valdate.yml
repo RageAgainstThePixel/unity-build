@@ -76,4 +76,4 @@ jobs:
         uses: ./ #RageAgainstThePixel/unity-build
         with:
           build-target: ${{ matrix.build-target }}
-          publish-artifacts: false
+          publish-artifacts: true
