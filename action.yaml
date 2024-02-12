@@ -71,6 +71,9 @@ runs:
       name: Upload Artifacts
       if: ${{ always() && inputs.publish-artifacts == 'true' }}
       with:
+        overwrite: true
+        retention-days: 1
+        compression-level: 0
         name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ runner.os }}-${{ inputs.build-target }}-Artifacts'
         path: |
           ${{ env.UNITY_PROJECT_PATH }}/Logs/*.log
