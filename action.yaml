@@ -22,6 +22,10 @@ inputs:
     description: 'Additional args to pass to build command'
     required: false
     default: ''
+  output-directory:
+    description: 'The directory to output the build to'
+    required: false
+    default: ''
   publish-artifacts:
     description: 'Should the workflow publish artifacts?'
     required: false
@@ -49,7 +53,9 @@ runs:
       with:
         log-name: '${{ inputs.build-target }}-Build'
         build-target: '${{ inputs.build-target }}'
-        args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ inputs.additional-build-args }}'
+        args: >-
+          -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ inputs.additional-build-args }}
+          ${{ inputs.output-directory != '' ? ' -buildOutputDirectory ' + inputs.output-directory : '' }}
 
     - name: Ensure Unity process is dead
       if: always()
@@ -77,9 +83,9 @@ runs:
         name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ runner.os }}-${{ inputs.build-target }}-Artifacts'
         path: |
           ${{ env.UNITY_PROJECT_PATH }}/Logs/*.log
-          ${{ env.UNITY_PROJECT_PATH }}/Builds/**/*
-          !${{ env.UNITY_PROJECT_PATH }}/Builds/**/*_BackUpThisFolder_ButDontShipItWithYourGame/**
-          !${{ env.UNITY_PROJECT_PATH }}/Builds/**/*_BurstDebugInformation_DoNotShip/**
+          ${{ inputs.output-directory != '' ? inputs.output-directory : env.UNITY_PROJECT_PATH/Builds }}/**/*
+          !${{ inputs.output-directory != '' ? inputs.output-directory : env.UNITY_PROJECT_PATH/Builds }}/**/*_BackUpThisFolder_ButDontShipItWithYourGame/**
+          !${{ inputs.output-directory != '' ? inputs.output-directory : env.UNITY_PROJECT_PATH/Builds }}/**/*_BurstDebugInformation_DoNotShip/**/*
 
     - name: Clean Artifacts
       if: ${{ always() && inputs.publish-artifacts == 'true' }}
