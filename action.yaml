@@ -40,6 +40,18 @@ runs:
         log-name: 'project-validation'
         args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject'
 
+    - name: Set output directory
+      id: set-output-directory
+      run: |
+        if ("${{ inputs.output-directory }}" -ne "") {
+          echo "OUTPUT_DIRECTORY_ARGS= -buildOutputDirectory ${{ inputs.output-directory }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "OUTPUT_DIRECTORY=${{ inputs.output-directory }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+        } else {
+          echo "OUTPUT_DIRECTORY_ARGS=" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "OUTPUT_DIRECTORY=${{ env.UNITY_PROJECT_PATH }}/Builds" | Out-File -FilePath $env:GITHUB_ENV -Append
+        }
+      shell: pwsh
+
     - uses: xrtk/unity-action@v6
       if: ${{ inputs.test == 'true' }}
       name: '${{ inputs.build-target }}-Tests'
@@ -54,8 +66,7 @@ runs:
         log-name: '${{ inputs.build-target }}-Build'
         build-target: '${{ inputs.build-target }}'
         args: >-
-          -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ inputs.additional-build-args }}
-          ${{ inputs.output-directory != '' ? ' -buildOutputDirectory ' + inputs.output-directory : '' }}
+          -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ inputs.additional-build-args }}${{ env.OUTPUT_DIRECTORY_ARGS }}
 
     - name: Ensure Unity process is dead
       if: always()
@@ -83,9 +94,9 @@ runs:
         name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ runner.os }}-${{ inputs.build-target }}-Artifacts'
         path: |
           ${{ env.UNITY_PROJECT_PATH }}/Logs/*.log
-          ${{ inputs.output-directory != '' ? inputs.output-directory : env.UNITY_PROJECT_PATH/Builds }}/**/*
-          !${{ inputs.output-directory != '' ? inputs.output-directory : env.UNITY_PROJECT_PATH/Builds }}/**/*_BackUpThisFolder_ButDontShipItWithYourGame/**
-          !${{ inputs.output-directory != '' ? inputs.output-directory : env.UNITY_PROJECT_PATH/Builds }}/**/*_BurstDebugInformation_DoNotShip/**/*
+          ${{ env.OUTPUT_DIRECTORY }}/**/*
+          !${{ env.OUTPUT_DIRECTORY }}/**/*_BackUpThisFolder_ButDontShipItWithYourGame/**
+          !${{ env.OUTPUT_DIRECTORY }}/**/*_BurstDebugInformation_DoNotShip/**/*
 
     - name: Clean Artifacts
       if: ${{ always() && inputs.publish-artifacts == 'true' }}
@@ -95,7 +106,7 @@ runs:
         Get-ChildItem -Path "${{ env.UNITY_PROJECT_PATH }}" -File -Filter "*.log" -Recurse | Remove-Item -Force
 
         # Clean Artifacts
-        $artifacts = "${{ env.UNITY_PROJECT_PATH }}/Builds"
+        $artifacts = "${{ env.OUTPUT_DIRECTORY }}"
         Write-Host "::debug::Build artifacts path: $artifacts"
 
         if (Test-Path -Path $artifacts) {
