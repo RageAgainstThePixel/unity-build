@@ -57,3 +57,14 @@ jobs:
         with:
           build-target: ${{ matrix.build-target }}
 ```
+
+## Inputs
+
+This action has the following input parameters:
+
+- **`build-target:`** ***Required***. The build target to build for. Unity -buildTarget command line args Unity CommandLineArguments. StandaloneWindows64, WSAPlayer, StandaloneOSX, iOS, StandaloneLinux64, Android, Lumin, WebGL. Default is ''.
+- **`additional-build-args:`** *Optional*. Additional [command line arguments](https://docs.unity3d.com/Manual/EditorCommandLineArguments.html) to pass to build command. Default is ''.
+- **`output-directory:`** *Optional*. The directory to output the build to. Default is ''.
+- **`publish-artifacts:`** *Optional*. Should the workflow publish artifacts? Default is `true`.
+- **`test:`** *Optional*. Run editor tests. Default is `true`.
+- **`additional-test-args:`** *Optional* Additional [command line arguments](https://docs.unity3d.com/Manual/EditorCommandLineArguments.html) to pass to test command. Default is ''.
