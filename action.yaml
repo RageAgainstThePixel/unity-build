@@ -14,6 +14,10 @@ inputs:
     description: 'Run editor tests'
     required: false
     default: 'true'
+  additional-validation-args:
+    description: 'Additional args to pass to validaation command'
+    required: false
+    default: ''
   additional-test-args:
     description: 'Additional args to pass to test command'
     required: false
@@ -38,7 +42,7 @@ runs:
       name: Project Validation
       with:
         log-name: 'project-validation'
-        args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject'
+        args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject ${{ inputs.additional-validation-args }}'
 
     - name: Set output directory
       id: set-output-directory
