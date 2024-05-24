@@ -15,7 +15,7 @@ inputs:
     required: false
     default: 'true'
   additional-validation-args:
-    description: 'Additional args to pass to validaation command'
+    description: 'Additional args to pass to validation command'
     required: false
     default: ''
   additional-test-args:
@@ -38,6 +38,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - run: echo "Running Unity Build Pipeline Utility"
+      shell: pwsh
+
     - uses: xrtk/unity-action@v6
       name: Project Validation
       with:
@@ -57,7 +60,7 @@ runs:
 
         echo "::debug::OutputDirectory: $outputDirectory"
         echo "::debug::OutputDirectoryArgs: $outputDirectoryArgs"
-        
+
         "OUTPUT_DIRECTORY=$outputDirectory" >> $env:GITHUB_ENV
         "OUTPUT_DIRECTORY_ARGS=$outputDirectoryArgs" >> $env:GITHUB_ENV
       shell: pwsh
@@ -130,4 +133,7 @@ runs:
         } else {
           Write-Host "::debug::Artifacts folder not found."
         }
+      shell: pwsh
+
+    - run: echo "::endgroup::"
       shell: pwsh
