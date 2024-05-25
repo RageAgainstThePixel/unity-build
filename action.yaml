@@ -38,18 +38,9 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: echo "Running Unity Build Pipeline Utility"
-      shell: pwsh
+    - run: |
+        echo "::group::Running Unity Build Pipeline Utility"
 
-    - uses: xrtk/unity-action@v6
-      name: Project Validation
-      with:
-        log-name: 'project-validation'
-        args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject ${{ inputs.additional-validation-args }}'
-
-    - name: Set output directory
-      id: set-output-directory
-      run: |
         $outputDirectoryArgs = ''
         $outputDirectory = '${{ env.UNITY_PROJECT_PATH }}/Builds'
 
@@ -58,12 +49,18 @@ runs:
           $outputDirectory = '${{ inputs.output-directory }}'
         }
 
-        echo "::debug::OutputDirectory: $outputDirectory"
-        echo "::debug::OutputDirectoryArgs: $outputDirectoryArgs"
+        echo "OutputDirectory: $outputDirectory"
+        echo "OutputDirectoryArgs: $outputDirectoryArgs"
 
         "OUTPUT_DIRECTORY=$outputDirectory" >> $env:GITHUB_ENV
         "OUTPUT_DIRECTORY_ARGS=$outputDirectoryArgs" >> $env:GITHUB_ENV
       shell: pwsh
+
+    - uses: xrtk/unity-action@v6
+      name: Project Validation
+      with:
+        log-name: 'project-validation'
+        args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject ${{ inputs.additional-validation-args }}'
 
     - uses: xrtk/unity-action@v6
       if: ${{ inputs.test == 'true' }}
