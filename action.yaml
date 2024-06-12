@@ -105,8 +105,6 @@ runs:
         path: |
           ${{ env.UNITY_PROJECT_PATH }}/Logs/*.log
           ${{ env.OUTPUT_DIRECTORY }}/**/*
-          !${{ env.OUTPUT_DIRECTORY }}/**/*_BackUpThisFolder_ButDontShipItWithYourGame/**/*
-          !${{ env.OUTPUT_DIRECTORY }}/**/*_BurstDebugInformation_DoNotShip/**/*
 
     - name: Clean Artifacts
       if: ${{ always() && inputs.publish-artifacts == 'true' }}
