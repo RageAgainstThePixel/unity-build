@@ -54,10 +54,8 @@ jobs:
         # https://github.com/XRTK/activate-unity-license
       - uses: xrtk/activate-unity-license@v5
         with:
-          # Required
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
-          # Optional
           license-type: 'Professional' # Chooses license type to use [ Personal, Professional ]
           # auth-key: ${{ secrets.UNITY_2FA_KEY }} # Required for personal activations
           serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
@@ -78,3 +76,11 @@ jobs:
         with:
           build-target: ${{ matrix.build-target }}
           publish-artifacts: false
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.build-target }}-Logs
+          path: |
+            # all log files
+            **/*.log
