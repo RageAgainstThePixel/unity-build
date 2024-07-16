@@ -28,7 +28,7 @@ jobs:
           # - os: windows-latest
           #   build-target: StandaloneWindows64
           - os: macos-latest
-            build-target: [StandaloneOSX, iOS, VisionOS]
+            build-target: 'StandaloneOSX VisionOS iOS'
 
     steps:
       - name: checkout self
