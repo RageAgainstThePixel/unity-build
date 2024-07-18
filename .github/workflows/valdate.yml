@@ -54,7 +54,7 @@ jobs:
 
         # Activates the installation with the provided credentials
         # https://github.com/XRTK/activate-unity-license
-      - uses: xrtk/activate-unity-license@development
+      - uses: xrtk/activate-unity-license@v5
         with:
           license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
