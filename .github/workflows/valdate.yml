@@ -54,10 +54,10 @@ jobs:
         # https://github.com/XRTK/activate-unity-license
       - uses: xrtk/activate-unity-license@development
         with:
-          license-type: 'Professional' # Chooses license type to use [ Personal, Professional ]
+          license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
-          serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
+          # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
       - name: Unity Build (${{ matrix.build-target }})
         uses: ./ #RageAgainstThePixel/unity-build
@@ -75,11 +75,3 @@ jobs:
         with:
           build-target: ${{ matrix.build-target }}
           publish-artifacts: false
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: ${{ matrix.build-target }}-Logs
-          path: |
-            # all log files
-            **/*.log
