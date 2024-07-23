@@ -27,6 +27,8 @@ jobs:
             build-target: StandaloneLinux64
           - os: windows-latest
             build-target: StandaloneWindows64
+          - os: macos-13
+            build-target: StandaloneOSX
           - os: macos-latest
             build-target: StandaloneOSX
 
@@ -39,6 +41,7 @@ jobs:
         with:
           repository: RageAgainstThePixel/com.utilities.buildpipeine
           path: test-project
+          ref: development
 
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
@@ -53,13 +56,10 @@ jobs:
         # https://github.com/XRTK/activate-unity-license
       - uses: xrtk/activate-unity-license@v5
         with:
-          # Required
+          license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
-          # Optional
-          license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
-          auth-key: ${{ secrets.UNITY_2FA_KEY }} # Required for personal activations
-          # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
+          # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
       - name: Unity Build (${{ matrix.build-target }})
         uses: ./ #RageAgainstThePixel/unity-build

@@ -8,12 +8,16 @@ inputs:
   build-target:
     description: 'The build target to build for.'
     # Unity -buildTarget command line args https://docs.unity3d.com/Manual/CommandLineArguments.html
-    # StandaloneWindows64, WSAPlayer, StandaloneOSX, iOS, StandaloneLinux64, Android, Lumin, WebGL
+    # StandaloneWindows64, WSAPlayer, StandaloneOSX, iOS, StandaloneLinux64, Android, Lumin, WebGL, VisionOS
     default: ''
   test:
     description: 'Run editor tests'
     required: false
     default: 'true'
+  additional-validation-args:
+    description: 'Additional args to pass to validation command'
+    required: false
+    default: ''
   additional-test-args:
     description: 'Additional args to pass to test command'
     required: false
@@ -34,23 +38,36 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Unity Build Pipeline Utility
+      run: |
+        # Unity Build Pipeline Utility
+        Write-Host "::debug::Build Target: ${{ inputs.build-target }}"
+        Write-Host "::debug::Run Editor Tests: ${{ inputs.test }}"
+        Write-Host "::debug::Additional Validation Args: ${{ inputs.additional-validation-args }}"
+        Write-Host "::debug::Additional Test Args: ${{ inputs.additional-test-args }}"
+        Write-Host "::debug::Additional Build Args: ${{ inputs.additional-build-args }}"
+        Write-Host "::debug::Publish Artifacts: ${{ inputs.publish-artifacts }}"
+
+        $outputDirectoryArgs = ''
+        $outputDirectory = '${{ env.UNITY_PROJECT_PATH }}/Builds'
+
+        if ("${{ inputs.output-directory }}" -ne "") {
+          $outputDirectoryArgs = ' -buildOutputDirectory ${{ inputs.output-directory }}'
+          $outputDirectory = '${{ inputs.output-directory }}'
+        }
+
+        Write-Host "::debug::OutputDirectory: $outputDirectory"
+        Write-Host "::debug::OutputDirectoryArgs: $outputDirectoryArgs"
+
+        "OUTPUT_DIRECTORY=$outputDirectory" >> $env:GITHUB_ENV
+        "OUTPUT_DIRECTORY_ARGS=$outputDirectoryArgs" >> $env:GITHUB_ENV
+      shell: pwsh
+
     - uses: xrtk/unity-action@v6
       name: Project Validation
       with:
         log-name: 'project-validation'
-        args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject'
-
-    - name: Set output directory
-      id: set-output-directory
-      run: |
-        if ("${{ inputs.output-directory }}" -ne "") {
-          echo "OUTPUT_DIRECTORY_ARGS= -buildOutputDirectory ${{ inputs.output-directory }}" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "OUTPUT_DIRECTORY=${{ inputs.output-directory }}" | Out-File -FilePath $env:GITHUB_ENV -Append
-        } else {
-          echo "OUTPUT_DIRECTORY_ARGS=" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "OUTPUT_DIRECTORY=${{ env.UNITY_PROJECT_PATH }}/Builds" | Out-File -FilePath $env:GITHUB_ENV -Append
-        }
-      shell: pwsh
+        args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject ${{ inputs.additional-validation-args }}'
 
     - uses: xrtk/unity-action@v6
       if: ${{ inputs.test == 'true' }}
@@ -68,9 +85,7 @@ runs:
         args: >-
           -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ inputs.additional-build-args }}${{ env.OUTPUT_DIRECTORY_ARGS }}
 
-    - name: Ensure Unity process is dead
-      if: always()
-      run: |
+    - run: |
         $processIdFile = Join-Path $env:GITHUB_WORKSPACE "unity-process-id.txt"
 
         if (Test-Path $processIdFile) {
@@ -83,6 +98,7 @@ runs:
           }
         }
       shell: pwsh
+      if: always()
 
     - uses: actions/upload-artifact@v4
       name: Upload Artifacts
@@ -95,8 +111,6 @@ runs:
         path: |
           ${{ env.UNITY_PROJECT_PATH }}/Logs/*.log
           ${{ env.OUTPUT_DIRECTORY }}/**/*
-          !${{ env.OUTPUT_DIRECTORY }}/**/*_BackUpThisFolder_ButDontShipItWithYourGame/**
-          !${{ env.OUTPUT_DIRECTORY }}/**/*_BurstDebugInformation_DoNotShip/**/*
 
     - name: Clean Artifacts
       if: ${{ always() && inputs.publish-artifacts == 'true' }}
