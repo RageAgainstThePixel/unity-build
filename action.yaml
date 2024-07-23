@@ -38,8 +38,15 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: |
-        echo "::group::Running Unity Build Pipeline Utility"
+    - name: Unity Build Pipeline Utility
+      run: |
+        # Unity Build Pipeline Utility
+        Write-Host "::debug::Build Target: ${{ inputs.build-target }}"
+        Write-Host "::debug::Run Editor Tests: ${{ inputs.test }}"
+        Write-Host "::debug::Additional Validation Args: ${{ inputs.additional-validation-args }}"
+        Write-Host "::debug::Additional Test Args: ${{ inputs.additional-test-args }}"
+        Write-Host "::debug::Additional Build Args: ${{ inputs.additional-build-args }}"
+        Write-Host "::debug::Publish Artifacts: ${{ inputs.publish-artifacts }}"
 
         $outputDirectoryArgs = ''
         $outputDirectory = '${{ env.UNITY_PROJECT_PATH }}/Builds'
@@ -49,8 +56,8 @@ runs:
           $outputDirectory = '${{ inputs.output-directory }}'
         }
 
-        echo "OutputDirectory: $outputDirectory"
-        echo "OutputDirectoryArgs: $outputDirectoryArgs"
+        Write-Host "::debug::OutputDirectory: $outputDirectory"
+        Write-Host "::debug::OutputDirectoryArgs: $outputDirectoryArgs"
 
         "OUTPUT_DIRECTORY=$outputDirectory" >> $env:GITHUB_ENV
         "OUTPUT_DIRECTORY_ARGS=$outputDirectoryArgs" >> $env:GITHUB_ENV
@@ -78,9 +85,7 @@ runs:
         args: >-
           -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ inputs.additional-build-args }}${{ env.OUTPUT_DIRECTORY_ARGS }}
 
-    - name: Ensure Unity process is dead
-      if: always()
-      run: |
+    - run: |
         $processIdFile = Join-Path $env:GITHUB_WORKSPACE "unity-process-id.txt"
 
         if (Test-Path $processIdFile) {
@@ -93,6 +98,7 @@ runs:
           }
         }
       shell: pwsh
+      if: always()
 
     - uses: actions/upload-artifact@v4
       name: Upload Artifacts
@@ -128,7 +134,4 @@ runs:
         } else {
           Write-Host "::debug::Artifacts folder not found."
         }
-      shell: pwsh
-
-    - run: echo "::endgroup::"
       shell: pwsh
