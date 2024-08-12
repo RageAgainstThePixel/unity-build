@@ -51,7 +51,7 @@ jobs:
         with:
           unity-version: ${{ matrix.unity-versions }}
           build-targets: ${{ matrix.build-target }}
-          version-file: 'test-project/**/ProjectSettings/ProjectVersion.txt'
+          version-file: 'test-project/Utilities.BuildPipeline/ProjectSettings/ProjectVersion.txt'
 
         # Activates the installation with the provided credentials
       - uses: RageAgainstThePixel/activate-unity-license@v1
