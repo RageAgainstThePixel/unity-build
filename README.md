@@ -53,7 +53,7 @@ jobs:
           build-targets: ${{ matrix.build-target }}
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v7
+        uses: RageAgainstThePixel/unity-build@v8
         with:
           build-target: ${{ matrix.build-target }}
 ```
