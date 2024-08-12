@@ -48,12 +48,12 @@ jobs:
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
         # https://github.com/XRTK/unity-setup
-      - uses: xrtk/unity-setup@v7
+      - uses: RageAgainstThePixel/unity-setup@v1
         with:
           build-targets: ${{ matrix.build-target }}
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v7
+        uses: RageAgainstThePixel/unity-build@v8
         with:
           build-target: ${{ matrix.build-target }}
 ```
@@ -69,3 +69,4 @@ This action has the following input parameters:
 - **`test:`** *Optional*. Run editor tests. Default is `true`.
 - **`additional-test-args:`** *Optional* Additional [command line arguments](https://docs.unity3d.com/Manual/EditorCommandLineArguments.html) to pass to test command. Default is ''.
 - **`additional-validation-args:`** *Optional* Additional command line arguments to pass during project validation phase.
+- **`artifact-name:`** *Optional* A name for this steps artifact.
