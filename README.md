@@ -69,3 +69,4 @@ This action has the following input parameters:
 - **`test:`** *Optional*. Run editor tests. Default is `true`.
 - **`additional-test-args:`** *Optional* Additional [command line arguments](https://docs.unity3d.com/Manual/EditorCommandLineArguments.html) to pass to test command. Default is ''.
 - **`additional-validation-args:`** *Optional* Additional command line arguments to pass during project validation phase.
+- **`artifact-name:`** *Optional* A name for this steps artifact.

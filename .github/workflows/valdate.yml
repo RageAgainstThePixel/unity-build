@@ -68,6 +68,7 @@ jobs:
           output-directory: ${{ github.workspace }}/Artifacts/${{ matrix.build-target }}
           additional-validation-args: -importTMProEssentialsAsset
           additional-build-args: -export
+          Artifact-Name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ runner.os }}-${{ matrix.build-target }}-${{ matrix.unity-versions }}-Artifacts'
 
       - name: Unity Build No Tests (${{ matrix.build-target }})
         uses: ./ #RageAgainstThePixel/unity-build
@@ -77,6 +78,7 @@ jobs:
           additional-validation-args: -importTMProEssentialsAsset
           additional-build-args: -export
           test: false
+          Artifact-Name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ runner.os }}-${{ matrix.build-target }}-${{ matrix.unity-versions }}-Artifacts'
 
       - name: Unity Build No Artifacts (${{ matrix.build-target }})
         uses: ./ #RageAgainstThePixel/unity-build

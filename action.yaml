@@ -33,6 +33,10 @@ inputs:
     description: 'Should the workflow publish artifacts?'
     required: false
     default: 'true'
+  artifact-name:
+    description: 'The name of the artifact to publish'
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -45,6 +49,7 @@ runs:
         Write-Host "::debug::Additional Test Args: ${{ inputs.additional-test-args }}"
         Write-Host "::debug::Additional Build Args: ${{ inputs.additional-build-args }}"
         Write-Host "::debug::Publish Artifacts: ${{ inputs.publish-artifacts }}"
+        Write-Host "::debug::Artifact Name: ${{ inputs.artifact-name }}"
 
         $outputDirectoryArgs = ''
         $outputDirectory = '${{ env.UNITY_PROJECT_PATH }}/Builds'
@@ -59,6 +64,14 @@ runs:
 
         "OUTPUT_DIRECTORY=$outputDirectory" >> $env:GITHUB_ENV
         "OUTPUT_DIRECTORY_ARGS=$outputDirectoryArgs" >> $env:GITHUB_ENV
+
+        if ("${{ inputs.artifact-name }}" -eq "") {
+          $artifactName = '${{ github.run_number }}.${{ github.run_attempt }}-${{ runner.os }}-${{ inputs.build-target }}-Artifacts'
+          "ARTIFACT_NAME=$artifactName" >> $env:GITHUB_ENV
+        } else {
+          "ARTIFACT_NAME=${{ inputs.artifact-name }}" >> $env:GITHUB_ENV
+        }
+
       shell: pwsh
     - uses: RageAgainstThePixel/unity-action@v1
       name: Project Validation
@@ -86,7 +99,7 @@ runs:
         overwrite: true
         retention-days: 1
         compression-level: 0
-        name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ runner.os }}-${{ inputs.build-target }}-Artifacts'
+        name: '${{ env.ARTIFACT_NAME }}'
         path: |
           ${{ env.UNITY_PROJECT_PATH }}/Logs/*.log
           ${{ env.OUTPUT_DIRECTORY }}/**/*
