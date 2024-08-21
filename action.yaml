@@ -101,8 +101,8 @@ runs:
         compression-level: 0
         name: '${{ env.ARTIFACT_NAME }}'
         path: |
-          ${{ env.UNITY_PROJECT_PATH }}/Logs/*.log
-          ${{ env.OUTPUT_DIRECTORY }}/**/*
+          ${{ env.UNITY_PROJECT_PATH }}/**/*.log
+          ${{ env.OUTPUT_DIRECTORY }}/
     - name: Clean Artifacts
       if: ${{ always() && inputs.publish-artifacts == 'true' }}
       run: |
