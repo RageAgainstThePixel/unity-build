@@ -32,6 +32,7 @@ jobs:
             build-target: StandaloneOSX
     steps:
       - name: Remove unused applications
+        if: runner.os == 'macos-latest'
         run: |
           df -hI /dev/disk3s1s1
           sudo rm -rf /Applications/Xcode_14.3.1.app
